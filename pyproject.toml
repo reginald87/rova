@@ -1,0 +1,52 @@
+[project]
+name = "rova"
+version = "0.1.0"
+description = "ROVA — Move Freely. Nigerian-first ride-hailing platform."
+readme = "README.md"
+requires-python = ">=3.11"
+
+[tool.ruff]
+src = ["backend"]
+line-length = 100
+target-version = "py313"
+# `extend-exclude`, not `exclude`: setting `exclude` replaces ruff's built-in skip
+# list, which would pull `backend/.venv` and friends back into every lint run.
+extend-exclude = ["backend/staticfiles", "backend/media", "backend/logs"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W", "B", "UP"]
+ignore = ["E501"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.black]
+line-length = 100
+target-version = ["py313"]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.settings.dev"
+python_files = ["test_*.py"]
+pythonpath = ["backend"]
+testpaths = ["backend/tests"]
+addopts = "-ra --strict-markers"
+
+[tool.mypy]
+python_version = "3.13"
+mypy_path = "backend"
+plugins = ["mypy_django_plugin.main"]
+files = ["backend"]
+exclude = ["backend/.*/migrations/", "backend/staticfiles", "backend/media"]
+check_untyped_defs = false
+strict_optional = true
+# A suppression that stops suppressing anything is just a comment that misleads
+# the next reader, so it is an error rather than a silent leftover.
+warn_unused_ignores = true
+
+[[tool.mypy.overrides]]
+module = ["dotenv", "dj_database_url", "django_redis.*", "celery.*", "channels.*"]
+ignore_missing_imports = true
+
+[tool.django-stubs]
+django_settings_module = "config.settings.dev"
